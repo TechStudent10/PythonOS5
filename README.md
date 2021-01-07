@@ -1,2 +1,3 @@
 # PythonOS5
  Technically PythonOS4...
+ To run this, you can run vmApp.py and click VM 1 and it will run.
