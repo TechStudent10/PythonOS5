@@ -102,6 +102,8 @@ class TerminalSpawner(Spawner):
         terminal = super().spawn(windowManager, Terminal, **kw)
         return terminal
 
+class FileMenu(Menu):
+    pass
 
 class FinderSpawner(Spawner):
     def spawn(self, windowManager, **kw):
@@ -115,34 +117,56 @@ FunctionOfApp = 'The class that you used to make your app'
 class [NameOfApp]Spawner(Spawner):
     def spawn(self, windowManager, **kw):
         [NameOfApp] = super().spawn(windowManager, [FunctionOfApp], **kw)
+        return [NameOfApp]
 '''
 
+class PythonOS5_Sandbox(Window):
+    def build(self):
+        self.icon_path = "Modules\\default.png"
+        Label(self.surface, text="Hello World").pack()
+        self.screen = MainScreen(self.surface)
+        self.screen.run()
 
-class MainScreen(Screen):
-    def __init__(self):
-        super().__init__()
+class SandboxSpawner(Spawner):
+    def spawn(self, windowManager, **kw):
+        sandbox = super().spawn(windowManager, PythonOS5_Sandbox, **kw)
+        return sandbox
 
-        self.taskbar = Taskbar(self)
-        self.taskbar.pack(side="bottom", fill=X)
-        self.wmManager = WindowManager(self, self.taskbar)
+class MainScreen(Frame):
+    def __init__(self, master):
+        super().__init__(master)
+
+        self.master = master
+
+        self.wmManager = WindowManager(self, None,height=self.master.winfo_screenheight(), width=self.master.winfo_screenwidth())
+        self.taskbar = Taskbar(self.wmManager)
         self.loadWindowManager()
-        self.appsMenu = AppMenu(self)
+        # self.taskbar.configMaster(self.wmManager)
+        self.appsMenu = AppMenu(self.wmManager)
+        self.wmManager.taskbar = self.taskbar
 
         self.terminalSpawner = TerminalSpawner()
         self.fileFinderSpawner = FinderSpawner()
+        self.sandboxSpawner = SandboxSpawner()
         self.spawner = Spawner()
 
         self.appsMenuButton = TaskbarButton(self.taskbar, text="Apps", width=5, command=self.showAppsMenu)
         self.appsMenu.taskbarButton = self.appsMenuButton
 
         self.image = ImageTk.PhotoImage(Image.open("Apps\\Terminal\\logo.png"))
-        DesktopButton(self, text="Terminal", image=self.image,
+        DesktopButton(self.wmManager, text="Terminal", image=self.image,
                       command=lambda: self.showApp(self.terminalSpawner)).place(x=25, y=25)
-        self.loadWindowManager()
-        self.loadWindowManager()
+
+        self.image = ImageTk.PhotoImage(Image.open("Modules\\default.png"))
+        DesktopButton(self.wmManager, text="Sandbox", image=self.image,
+                      command=lambda: self.showApp(self.sandboxSpawner)).place(x=100, y=25)
+
+        self.taskbar.place(x=0, y=30, relx=0, rely=0.9)
+        #self.loadWindowManager()
+        #self.loadWindowManager()
 
     def run(self):
-        super().run()
+        self.pack(fill=BOTH, expand=1)
 
     def showAppsMenu(self):
         self.appsMenu.show()
@@ -223,13 +247,15 @@ class MainScreen(Screen):
         self.appsMenuButton.config(command=self.showAppsMenu)
 
     def loadWindowManager(self):
-        self.wmManager.pack(fill=BOTH, expand=1, side="top")
+        self.wmManager.pack(fill=BOTH, expand=1)
 
 
 def main():
-    operatingSystem = MainScreen()
+    screen = Screen()
+    screen.resizable(False, False)
+    operatingSystem = MainScreen(screen)
     operatingSystem.run()
-
+    screen.run()
 
 if __name__ == "__main__":
     main()

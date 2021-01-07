@@ -57,6 +57,13 @@ class Window(Frame):
             Label(self, image=self.icon).place(x=0, y=0)
         """
 
+    def run(self):
+        self.build()
+        return self
+
+    def build(self):
+        Label(self.surface, text="I am in the build method.").pack()
+
     def packGrip(self):
         self.grip.pack(side=TOP, fill=X, expand=1)
 

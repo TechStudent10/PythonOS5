@@ -23,7 +23,12 @@ class WindowManager(Frame):
         :param window: Window
         :return: None
         '''
-        window.place(x=window.x, y=window.y)
+
+        try:
+            window.run().place(x=window.x, y=window.y)
+        except Exception:
+            window.place(x=window.x, y=window.y)
+        
         taskbarBtn = TaskbarButton(self.taskbar, text=window.name)  # , image=window.image)
         taskbarBtn.config(command=lambda: window.minimize(taskbarBtn))
         window.taskbarBtn = taskbarBtn

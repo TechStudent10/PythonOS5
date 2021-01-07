@@ -12,3 +12,4 @@ from Modules.taskbarBtn import TaskbarButton
 from Modules.window import Window
 from Modules.windowManager import WindowManager
 from AppsMenu.appMenu import AppMenu, Bar
+from menus import Menus
